@@ -97,8 +97,8 @@ router.post("/login", async (req, res) => {
     }
 
     const jwtToken = jwt.sign(
-      { id: userSnapshot.docs[0].id, username: userData.username, email: userData.email },
-      process.env.JWT_SECRET || "SECRET_KEY",
+      { email: userData.email, grado: userData.grado, username: userData.username, grupo: userData.grupo },
+      process.env.JWT_SECRET || "aguacate",
       { expiresIn: "2h" }
     );
 
@@ -201,3 +201,4 @@ router.get("/logs-warning", async (req, res) => {
 
 
 module.exports = router;
+ 
