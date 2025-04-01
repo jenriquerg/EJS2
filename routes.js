@@ -136,10 +136,10 @@ router.post("/verify-otp", async (req, res) => {
     }
 
     const jwtToken = jwt.sign(
-      { id: userSnapshot.docs[0].id, username: user.username, email: user.email },
-      process.env.JWT_SECRET || "SECRET_KEY",
-      { expiresIn: "2h" }
-    );
+        {  email: user.email, grado: user.grado, username: user.username, grupo: user.grupo },
+        process.env.JWT_SECRET || "aguacate",
+        { expiresIn: "2h" }
+      );
 
     res.json({ success: true, token: jwtToken });
   } catch (error) {
