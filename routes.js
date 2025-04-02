@@ -8,6 +8,26 @@ const router = express.Router();
 const db = admin.firestore();
 
 
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Acceso no autorizado, token requerido" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Token inválido o expirado" });
+    }
+    
+    req.user = decoded;
+    next();
+  });
+};
+
+
 router.get("/getInfo", async (req, res) => {
   const alumnoInfo = {
     nombre: "Jesus Enrique Rojas Guerrero",
@@ -148,7 +168,7 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-router.get("/logs", async (req, res) => {
+router.get("/logs", verifyToken, async (req, res) => {
   try {
     const logsRef = db.collection("logs2");
     const snapshot = await logsRef.get();
@@ -165,7 +185,7 @@ router.get("/logs", async (req, res) => {
   }
 });
 
-router.get("/logs-error", async (req, res) => {
+router.get("/logs-error", verifyToken, async (req, res) => {
   try {
     const logsRef = db.collection("logs2");
     const snapshot = await logsRef.where("logLevel", "==", "error").get();
@@ -182,7 +202,7 @@ router.get("/logs-error", async (req, res) => {
   }
 });
 
-router.get("/logs-warning", async (req, res) => {
+router.get("/logs-warning", verifyToken, async (req, res) => {
   try {
     const logsRef = db.collection("logs2");
     const snapshot = await logsRef.where("logLevel", "==", "warning").get();
